@@ -1,8 +1,10 @@
 # MoKao — 粉笔模考采集 Chrome 扩展
 
-小白基于Ai agent完成的第一个项目，本身是想用Obsidian Web Clipper的网页剪藏功能搭建自己的本地知识库，但Obsidian Web Clipper无法正常读取排版和图片，导入我自己的爬取skill模板和Obsidian Web Clipper本身模板格式冲突。所以诞生了这个扩展程序
-本项目的代码大部分参考了Obsidian Web Clipperd！
 一款面向公考备考的 Chrome 扩展工具，自动从粉笔模考页面提取完整试卷（题目/选项/解析/图片/材料），生成带 YAML Frontmatter 的结构化 Markdown 笔记，通过剪贴板协议一键直存 Obsidian 知识库。
+
+小白基于Ai agent完成的第一个项目，本身是想用Obsidian Web Clipper的网页剪藏功能搭建自己的本地知识库，但Obsidian Web Clipper无法正常读取排版和图片，导入我自己的爬取skill模板和Obsidian Web Clipper本身模板格式冲突。所以诞生了这个扩展程序
+
+## 声明！本项目的代码大部分参考了Obsidian Web Clipperd！
 
 ## ✨ 功能特性
 
