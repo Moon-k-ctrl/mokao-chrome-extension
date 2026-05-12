@@ -1,0 +1,5 @@
+*.zip
+node_modules/
+.DS_Store
+Thumbs.db
+vault_config.json

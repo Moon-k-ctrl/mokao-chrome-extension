@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "0.1.0",
+  "name": "粉笔模考",
+  "behavior": "create",
+  "noteNameFormat": "{{title}}",
+  "path": "粉笔模考",
+  "noteContentFormat": "# {{title}}\n时间: {{date}}\n来源: {{url}}\n\n---\n**统计:** {{selector:.total-questions}} 题 | 答对 {{selector:.correct-count}} | 正确率 {{selector:.accuracy-value}}%\n---\n\n{{selectorHtml:.question-list|markdown}}",
+  "properties": [
+    {
+      "name": "title",
+      "value": "{{title}}",
+      "type": "text"
+    },
+    {
+      "name": "date",
+      "value": "{{date}}",
+      "type": "date"
+    },
+    {
+      "name": "source",
+      "value": "{{url}}",
+      "type": "text"
+    },
+    {
+      "name": "tags",
+      "value": "粉笔, 行测, 模考",
+      "type": "multitext"
+    },
+    {
+      "name": "totalQuestions",
+      "value": "{{selector:.total-questions}}",
+      "type": "text"
+    },
+    {
+      "name": "correctCount",
+      "value": "{{selector:.correct-count}}",
+      "type": "text"
+    },
+    {
+      "name": "accuracy",
+      "value": "{{selector:.accuracy-value}}",
+      "type": "text"
+    }
+  ],
+  "triggers": [
+    "https://spa.fenbi.com/ti/exam/solution/",
+    "https://spa.fenbi.com/ti/exam/report/"
+  ]
+}

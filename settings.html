@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>粉笔模考爬虫 - 设置</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 500px;
+      font-family: -apple-system, 'Microsoft YaHei', sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f8f9fa;
+    }
+    header {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header .badge {
+      background: rgba(255,255,255,0.2);
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    header h1 { font-size: 18px; font-weight: 600; }
+    header p { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+
+    .tabs {
+      display: flex;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      padding: 0 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-size: 13px;
+      color: #666;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: #e74c3c; }
+    .tab.active { border-color: #e74c3c; color: #e74c3c; font-weight: 500; }
+
+    .panels { padding: 16px; }
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    .card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+    textarea:focus { outline: none; border-color: #e74c3c; }
+    textarea.error { border-color: #e74c3c; background: #fff5f5; }
+
+    .help-text {
+      font-size: 11px;
+      color: #999;
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    .help-text code {
+      background: #f5f5f5;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-family: monospace;
+      color: #e74c3c;
+    }
+
+    .var-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .var-chip {
+      background: #f0f4ff;
+      color: #4a6cf7;
+      border: 1px solid #dde4ff;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-family: monospace;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .var-chip:hover { background: #4a6cf7; color: #fff; border-color: #4a6cf7; }
+
+    select, input[type="text"] {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: #fff;
+      color: #333;
+    }
+    select:focus, input:focus { outline: none; border-color: #e74c3c; }
+    input[type="text"] { width: 100%; }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .btn:hover { opacity: 0.85; }
+    .btn-primary { background: #e74c3c; color: #fff; }
+    .btn-secondary { background: #f0f0f0; color: #666; }
+    .btn-success { background: #27ae60; color: #fff; }
+
+    .status-msg {
+      font-size: 12px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      display: none;
+    }
+    .status-msg.show { display: block; }
+    .status-msg.ok { background: #eafaf1; color: #27ae60; }
+    .status-msg.err { background: #ffeaea; color: #e74c3c; }
+
+    .preview {
+      background: #fafafa;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+      font-family: monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .img-config { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .config-item { margin-bottom: 10px; }
+    .config-item label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; }
+
+    .about { font-size: 13px; color: #666; line-height: 1.8; }
+    .about a { color: #e74c3c; }
+
+    /* Obsidian panel */
+    .obs-running { background: #eafaf1 !important; color: #27ae60; border-left: 3px solid #27ae60; }
+    .obs-offline  { background: #fff5f5 !important; color: #e74c3c; border-left: 3px solid #e74c3c; }
+    .obs-unknown  { background: #f5f5f5 !important; color: #999; border-left: 3px solid #ccc; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div style="flex:1">
+    <h1>📝 粉笔模考爬虫 <span class="badge">mokao1.0</span></h1>
+    <p>模板自定义设置</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" data-tab="question">题目模板</div>
+  <div class="tab" data-tab="material">材料模板</div>
+  <div class="tab" data-tab="header">文件头部</div>
+  <div class="tab" data-tab="general">通用设置</div>
+  <div class="tab" data-tab="obsidian">📖 Obsidian</div>
+</div>
+
+<div class="panels">
+
+  <!-- 题目模板 -->
+  <div class="panel active" id="panel-question">
+    <div class="card">
+      <div class="card-title">📋 题目模板</div>
+      <div class="var-grid" id="q-var-grid"></div>
+      <textarea id="tpl-question" rows="10"></textarea>
+      <div class="help-text" id="q-help"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">👁 实时预览</div>
+      <div class="preview" id="q-preview"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="q-reset">恢复默认</button>
+      <button class="btn btn-primary" id="q-save">💾 保存</button>
+    </div>
+    <div class="status-msg" id="q-status"></div>
+  </div>
+
+  <!-- 材料模板 -->
+  <div class="panel" id="panel-material">
+    <div class="card">
+      <div class="card-title">📄 材料模板</div>
+      <div class="var-grid" id="m-var-grid"></div>
+      <textarea id="tpl-material" rows="6"></textarea>
+      <div class="help-text" id="m-help"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="m-reset">恢复默认</button>
+      <button class="btn btn-primary" id="m-save">💾 保存</button>
+    </div>
+    <div class="status-msg" id="m-status"></div>
+  </div>
+
+  <!-- 文件头部模板 -->
+  <div class="panel" id="panel-header">
+    <div class="card">
+      <div class="card-title">🏠 文件头部模板</div>
+      <div class="var-grid" id="h-var-grid"></div>
+      <textarea id="tpl-header" rows="10"></textarea>
+      <div class="help-text" id="h-help"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">👁 实时预览</div>
+      <div class="preview" id="h-preview"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="h-reset">恢复默认</button>
+      <button class="btn btn-primary" id="h-save">💾 保存</button>
+    </div>
+    <div class="status-msg" id="h-status"></div>
+  </div>
+
+  <!-- 通用设置 -->
+  <div class="panel" id="panel-general">
+    <div class="card">
+      <div class="card-title">🖼 图片处理</div>
+      <div class="img-config">
+        <div class="config-item">
+          <label>题目/解析图片</label>
+          <select id="cfg-img-mode">
+            <option value="base64">Base64 内嵌（单文件，方便分享）</option>
+            <option value="url">保留 URL（文件小）</option>
+            <option value="skip">跳过图片（仅文本）</option>
+          </select>
+        </div>
+        <div class="config-item">
+          <label>材料图片</label>
+          <select id="cfg-mat-img">
+            <option value="base64">Base64 内嵌</option>
+            <option value="url">保留 URL</option>
+            <option value="skip">跳过</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">📤 输出设置</div>
+      <div class="config-item" style="margin-bottom:8px">
+        <label>题目分隔符</label>
+        <select id="cfg-sep">
+          <option value="hr">水平线 (---)</option>
+          <option value="h2">二级标题 (##)</option>
+          <option value="space">空行分隔</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="g-save">💾 保存设置</button>
+    </div>
+    <div class="status-msg" id="g-status"></div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">ℹ️ 关于</div>
+      <div class="about">
+        粉笔模考爬虫 mokao1.0 基于 Obsidian Web Clipper 模板设计理念。<br>
+        使用 <code>Handlebars</code> 风格语法，支持 <code>{{变量名}}</code>、<code>{{#each}}</code> 循环和 <code>{{#if}}</code> 条件判断。<br><br>
+        点击变量标签可快速插入。设置保存在浏览器本地。
+      </div>
+    </div>
+  </div>
+
+  <!-- Obsidian 直存设置 -->
+  <div class="panel" id="panel-obsidian">
+    <div class="card" style="border-left:3px solid #7c3aed">
+      <div class="card-title">📖 Obsidian 直存</div>
+      <div class="help-text" style="margin-bottom:12px">
+        运行 <code>mokao_obsidian_server.py</code> 后，扩展可将 Markdown 直接写入 Obsidian Vault，无需手动下载。
+      </div>
+
+      <div id="obs-server-status" class="obs-unknown" style="font-size:13px;margin-bottom:10px;padding:8px 12px;border-radius:6px;">
+        ⏳ 正在检测服务器...
+      </div>
+
+      <div class="config-item">
+        <label>服务器地址</label>
+        <div style="display:flex;gap:6px">
+          <input type="text" id="obs-url" value="http://localhost:8765" style="flex:1" placeholder="http://localhost:8765">
+          <button class="btn btn-secondary" id="obs-test" style="white-space:nowrap">🔍 检测</button>
+        </div>
+      </div>
+
+      <div class="config-item">
+        <label>Vault 路径（首次设置请手动输入）</label>
+        <input type="text" id="obs-vault-path" placeholder="例如: C:\Users\你的用户名\Documents\Obsidian\我的笔记库">
+        <div class="help-text">服务器启动时选择后会自动记住，也可以手动修改</div>
+      </div>
+
+      <div class="config-item">
+        <label>保存文件夹</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="text" id="obs-folder" value="粉笔模考" placeholder="粉笔模考" style="flex:1">
+          <select id="obs-folder-select" style="flex:1">
+            <option value="">— 根目录 —</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="config-item">
+        <label>文件名模板</label>
+        <input type="text" id="obs-filename" value="模考_{{date}}" placeholder="模考_{{date}}">
+        <div class="help-text">
+          占位符: <code>{{date}}</code> → 2026-05-11 | <code>{{datetime}}</code> → 2026-05-11_10-28
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:14px">
+          <input type="checkbox" id="obs-enable" style="width:16px;height:16px">
+          <span>启用直存（提取后自动写入 Vault，替代本地下载）</span>
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-success" id="obs-save">💾 保存配置</button>
+        <button class="btn btn-secondary" id="obs-open-server">🖥 查看服务器状态</button>
+      </div>
+      <div class="status-msg" id="obs-status"></div>
+      <div id="obs-last-save" style="font-size:12px;color:#888;margin-top:8px;min-height:16px"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🖥 启动服务器</div>
+      <div class="about" style="background:#f8f9fa;padding:12px;border-radius:8px;font-family:monospace;font-size:12px;line-height:2">
+        <div style="margin-bottom:8px;color:#666">① 在终端运行（需要 Python 3.8+）：</div>
+        <div style="color:#e74c3c;word-break:break-all">cd <span id="server-path-hint">/path/to/chrome-extension/</span></div>
+        <div style="color:#e74c3c">python mokao_obsidian_server.py --vault "你的Obsidian库路径"</div>
+        <div style="margin:8px 0;color:#666">② 首次运行会要求选择 Vault 目录（Windows 文件选择器）</div>
+        <div style="color:#666">③ 服务器运行后，在扩展设置中确认服务器连接正常即可</div>
+      </div>
+      <div class="about" style="margin-top:10px">
+        💡 <strong>原理：</strong>扩展通过 HTTP POST 将 Markdown 内容发送给本地 Python 服务器，服务器直接写入 Obsidian Vault 文件夹。<br>
+        服务器只监听 <code>localhost:8765</code>，不暴露外网，安全可靠。vault 路径保存在本地配置文件，持久生效。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="template.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

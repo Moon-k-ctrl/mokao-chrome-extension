@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>MoKao</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 360px;
+      font-family: -apple-system, 'Microsoft YaHei', sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f8f9fa;
+    }
+    .header {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .header .icon {
+      width: 40px; height: 40px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .header .info { flex: 1; }
+    .header h1 { font-size: 18px; font-weight: 600; }
+    .header .badge {
+      font-size: 11px;
+      background: rgba(255,255,255,0.2);
+      padding: 2px 8px; border-radius: 4px;
+      margin-left: 8px;
+    }
+    .status-panel {
+      background: #fff; padding: 12px 20px;
+      border-bottom: 1px solid #eee;
+    }
+    .status-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px;
+    }
+    .status-row:last-child { margin-bottom: 0; }
+    .status-icon { font-size: 14px; }
+    .status-icon.ok { color: #27ae60; }
+    .status-icon.err { color: #e74c3c; }
+    .status-icon.warn { color: #f39c12; }
+    .status-text { flex: 1; font-size: 12px; color: #666; }
+    .status-value { font-weight: 600; color: #27ae60; }
+    .main-content { padding: 16px 20px; background: #fff; }
+
+    /* 属性面板 - 类似 Web Clipper */
+    .properties-panel {
+      background: #f8f9fa;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .properties-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: #fff;
+      border-bottom: 1px solid #e5e7eb;
+      cursor: pointer;
+      user-select: none;
+    }
+    .properties-header:hover { background: #f9fafb; }
+    .properties-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #374151;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .properties-toggle {
+      font-size: 10px;
+      color: #9ca3af;
+      transition: transform 0.2s;
+    }
+    .properties-panel.expanded .properties-toggle {
+      transform: rotate(180deg);
+    }
+    .properties-content {
+      display: none;
+      padding: 12px;
+    }
+    .properties-panel.expanded .properties-content {
+      display: block;
+    }
+    .property-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .property-row:last-child { margin-bottom: 0; }
+    .property-icon {
+      width: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #6b7280;
+    }
+    .property-label {
+      width: 50px;
+      font-size: 12px;
+      color: #6b7280;
+      flex-shrink: 0;
+    }
+    .property-input {
+      flex: 1;
+      padding: 6px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 13px;
+      background: #fff;
+      min-width: 0;
+    }
+    .property-input:focus {
+      outline: none;
+      border-color: #e74c3c;
+      box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.1);
+    }
+
+    .btn {
+      width: 100%; padding: 12px;
+      border: none; border-radius: 8px;
+      font-size: 14px; cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-primary { background: #e74c3c; color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: #c0392b; }
+    .btn-success { background: #7c3aed; color: #fff; }
+    .btn-success:hover:not(:disabled) { background: #6d28d9; }
+    .btn-outline { background: #fff; color: #666; border: 1px solid #ddd; }
+    .btn-outline:hover:not(:disabled) { background: #f5f5f5; }
+    .progress { margin-top: 10px; display: none; }
+    .progress.show { display: block; }
+    .progress-bar { height: 4px; background: #eee; border-radius: 4px; overflow: hidden; }
+    .progress-bar-inner { height: 100%; background: #e74c3c; width: 0%; transition: width 0.3s; }
+    .progress-text { font-size: 11px; color: #888; margin-top: 4px; }
+    .log {
+      max-height: 100px; overflow-y: auto;
+      font-size: 11px; background: #f5f5f5;
+      padding: 8px; border-radius: 6px;
+      margin-top: 10px; line-height: 1.6;
+    }
+    .log .line { color: #666; }
+    .log .line.ok { color: #27ae60; }
+    .log .line.err { color: #e74c3c; }
+    .log .line.warn { color: #f39c12; }
+    .settings-link { text-align: center; margin-top: 12px; }
+    .settings-link a { font-size: 12px; color: #888; text-decoration: none; }
+    .settings-link a:hover { color: #e74c3c; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="icon">📝</div>
+    <div class="info">
+      <h1>MoKao <span class="badge">v2.3.0</span></h1>
+    </div>
+  </div>
+
+  <div class="status-panel">
+    <div class="status-row">
+      <span class="status-icon" id="statusIcon">⏳</span>
+      <span class="status-text" id="statusText">正在检测页面...</span>
+    </div>
+    <div class="status-row" id="statsRow" style="display:none">
+      <span class="status-icon ok">📊</span>
+      <span class="status-text">已提取 <span class="status-value" id="questionCount">0</span> 道题目</span>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <!-- 属性面板 -->
+    <div class="properties-panel expanded" id="propertiesPanel">
+      <div class="properties-header" id="propertiesHeader">
+        <div class="properties-title">
+          <span>📋</span>
+          <span>笔记属性</span>
+        </div>
+        <span class="properties-toggle">▼</span>
+      </div>
+      <div class="properties-content">
+        <div class="property-row">
+          <span class="property-icon">📝</span>
+          <span class="property-label">title</span>
+          <input type="text" class="property-input" id="propTitle" placeholder="笔记标题">
+        </div>
+        <div class="property-row">
+          <span class="property-icon">📅</span>
+          <span class="property-label">date</span>
+          <input type="text" class="property-input" id="propDate" placeholder="2025-05-12">
+        </div>
+        <div class="property-row">
+          <span class="property-icon">🔗</span>
+          <span class="property-label">source</span>
+          <input type="text" class="property-input" id="propSource" placeholder="https://...">
+        </div>
+        <div class="property-row">
+          <span class="property-icon">🏷️</span>
+          <span class="property-label">tags</span>
+          <input type="text" class="property-input" id="propTags" placeholder="粉笔, 行测, 模考">
+        </div>
+        <div class="property-row">
+          <span class="property-icon">💯</span>
+          <span class="property-label">score</span>
+          <input type="number" class="property-input" id="propScore" placeholder="自动获取或手动输入">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="extractBtn" disabled>⏳ 检测页面中...</button>
+
+    <button class="btn btn-success" id="saveToObsidianBtn" disabled style="display:none">📖 保存到 Obsidian</button>
+
+    <div class="progress" id="progress">
+      <div class="progress-bar"><div class="progress-bar-inner" id="progressBar"></div></div>
+      <div class="progress-text" id="progressText">准备中...</div>
+    </div>
+
+    <div class="log" id="log" style="display:none"></div>
+
+    <button class="btn btn-outline" id="downloadBtn" disabled>💾 下载 Markdown</button>
+
+    <div class="settings-link">
+      <a href="#" id="settingsBtn">⚙️ 设置</a>
+    </div>
+  </div>
+
+  <script src="template.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
